@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: flcollar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:54:03 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/12 15:55:41 by chajjar          ###   ########.fr       */
+/*   Updated: 2022/07/14 13:52:53 by flcollar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-# include<stdio.h>
-# include<stdlib.h>
-# include<pthread.h>
-# include<semaphore.h>
-# include<unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <pthread.h>
+# include <unistd.h>
+# include <sys/time.h>
 
 struct s_philo;
 
@@ -42,8 +42,14 @@ typedef struct s_philo
 	unsigned int	nb_eating;
 	struct timeval	last_time_eat;
 	t_philosopher	*runtime;
+	pthread_t		thread;
 
 }	t_philo;
 
+int				ft_atoi(const char *str);
+void			*error_msg(int errcode, void *freeable);
+t_philosopher	*init_args(char **args);
+t_philosopher	*parse(int argc, char **argv);
+t_philo			*init_philo(t_philosopher *data, int i);
 
-#endif
+#endif /* PHILO_H */
