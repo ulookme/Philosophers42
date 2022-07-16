@@ -6,7 +6,7 @@
 /*   By: flcollar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:54:03 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 13:52:53 by flcollar         ###   ########.fr       */
+/*   Updated: 2022/07/14 15:56:29 by flcollar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_struc_philosopher
 	unsigned int	time_to_sleep;
 	unsigned int	nb_must_eat;
 	struct s_philo	*philo;
+	struct timeval	start;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t write_protec;
 
@@ -43,13 +44,34 @@ typedef struct s_philo
 	struct timeval	last_time_eat;
 	t_philosopher	*runtime;
 	pthread_t		thread;
+	char			id;
 
 }	t_philo;
 
-int				ft_atoi(const char *str);
-void			*error_msg(int errcode, void *freeable);
-t_philosopher	*init_args(char **args);
+enum logCode {
+	NO_LOG = 0,
+	FORK,
+	EAT,
+	SLEEP,
+	THINK,
+	DIE
+};
+
+enum errCode {
+	NO_ERR = 0,
+	LOW_ARGS,
+	MANY_ARGS,
+	MEMORY_FAIL,
+	INVALID_ARGS
+};
+
+void			runtime(t_philosopher *data);
+void			log_msg(enum logCode logcode, t_philo *philo);
+void			*error_msg(enum errCode errcode, void *freeable);
+long long		elapsed_convert(struct timeval timestamp);
+long long		time_convert(struct timeval timestamp);
+struct timeval	elapsed(struct timeval timestamp);
 t_philosopher	*parse(int argc, char **argv);
-t_philo			*init_philo(t_philosopher *data, int i);
+void			dead_task(t_philosopher *runtime);
 
 #endif /* PHILO_H */

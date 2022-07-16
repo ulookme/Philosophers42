@@ -6,7 +6,7 @@
 #    By: flcollar <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/12 13:52:27 by chajjar           #+#    #+#              #
-#    Updated: 2022/07/14 13:36:49 by flcollar         ###   ########.fr        #
+#    Updated: 2022/07/14 16:21:16 by flcollar         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,12 @@
 # ===------------------------=== #
 
 NAME = philo
-TEST_ARGS = 10 410 200 200
+TEST_ARGS = 50 100 100 200 20
 
 FLAGS = -Wall -Werror -Wextra -g3
 DANGER = -fsanitize=address
 
-ALL = parsing philo main thread
+ALL = parsing philo main thread output
 SRC = $(addprefix $(SUBFOLDER_SRC), $(addsuffix .c, $(ALL)))
 OBJ = $(SRC:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: flcollar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 16:05:52 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 13:52:55 by flcollar         ###   ########.fr       */
+/*   Updated: 2022/07/14 15:05:55 by flcollar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
  * @param	str: String to convert
  * @return	Converted integer
  */
-int	ft_atoi(const char *str)
+static int	ft_atoi(const char *str)
 {
 	long int	res;
 	int			negative;
@@ -41,39 +41,13 @@ int	ft_atoi(const char *str)
 	return (res * negative);
 }
 
-/* Display an error message depending on the
- * error code given
- *
- * @param	errcode: Error code to display
- * @param	freeable: In case anything should be freed
- * @return	Returns NULL
- */
-void	*error_msg(int errcode, void *freeable)
-{
-	if (freeable)
-		free(freeable);
-	if (errcode < 1)
-		return (NULL);
-	printf("\033[31;1mERROR: \033[0;31m");
-	if (errcode == 1)
-		printf("Not enough arguments!");
-	else if (errcode == 2)
-		printf("Too many arguments!");
-	else if (errcode == 3)
-		printf("Memory allocation failed!");
-	else if (errcode == 4)
-		printf("Invalid arguments!");
-	printf("\033[0m\n");
-	return (NULL);
-}
-
 /* Initialize the base structure of the
  * simulation with given args
  *
  * @param	args: Arguments to parse
  * @return	Base structure ready to use
  */
-t_philosopher	*init_args(char **args)
+static t_philosopher	*init_args(char **args)
 {
 	t_philosopher	*rules;
 
@@ -85,7 +59,25 @@ t_philosopher	*init_args(char **args)
 	rules->time_to_eat = ft_atoi(args[3]);
 	rules->time_to_sleep = ft_atoi(args[4]);
 	rules->nb_must_eat = ft_atoi(args[5]);
+	rules->actif_or_not = 1;
 	return (rules);
+}
+
+/* Initializes every mutexes of the core structur
+ *
+ * @param	build: Core structure of the simulation
+ */
+static void	init_mutex(t_philosopher *build)
+{
+	size_t	i;
+
+	build->forks = malloc(sizeof(pthread_mutex_t) * build->nb_philo);
+	if (!build->forks)
+		return ;
+	i = 0;
+	while (i < build->nb_philo)
+		pthread_mutex_init(&build->forks[i++], NULL);
+	pthread_mutex_init(&build->write_protec, NULL);
 }
 
 /* Parses the arguments and returns the base
@@ -100,18 +92,23 @@ t_philosopher	*parse(int argc, char **argv)
 	t_philosopher	*build;
 
 	if (argc < 5)
-		return (error_msg(1, NULL));
+		return (error_msg(LOW_ARGS, NULL));
 	else if (argc > 6)
-		return (error_msg(2, NULL));
+		return (error_msg(MANY_ARGS, NULL));
 	build = init_args(argv);
 	if (!build)
-		return (error_msg(3, NULL));
+		return (error_msg(MEMORY_FAIL, NULL));
 	if (!build->nb_philo || !build->time_to_die
 		|| !build->time_to_eat || !build->time_to_sleep)
-		return (error_msg(4, build));
+		return (error_msg(INVALID_ARGS, build));
 	build->philo = malloc(sizeof(t_philo) * build->nb_philo);
-	build->forks = malloc(sizeof(pthread_mutex_t) * build->nb_philo);
-	if (!build->philo || !build->forks)
-		return (error_msg(4, build));
+	if (!build->philo)
+		return (error_msg(MEMORY_FAIL, build));
+	init_mutex(build);
+	if (!build->forks)
+	{
+		free(build->philo);
+		return (error_msg(MEMORY_FAIL, build));
+	}
 	return (build);
 }

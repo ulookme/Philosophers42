@@ -6,7 +6,7 @@
 /*   By: flcollar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 14:29:06 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 13:20:48 by flcollar         ###   ########.fr       */
+/*   Updated: 2022/07/14 14:41:08 by flcollar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ int main(int argc, char **argv)
 	build = parse(argc, argv);
 	if (!build)
 		return (1);
-	printf("PHILO: %d\nDEATH: %d\nEATIN: %d\nSLEEP: %d\nEAT: %d\n",
-		build->nb_philo, build->time_to_die, build->time_to_eat,
-		build->time_to_sleep, build->nb_must_eat);
+	runtime(build);
+	free(build->forks);
+	free(build->philo);
 	free(build);
 	return (0);
 }
