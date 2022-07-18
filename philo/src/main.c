@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chajjar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/12 14:29:06 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 14:41:08 by chajjar         ###   ########.fr       */
+/*   Created: 2022/07/18 12:48:42 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/18 12:48:47 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* Core function of the simulation programm
+/* Core function of the simulation programm philo
  *
  * @param	argc: Amount of arguments
  * @param	argv: List of arguments
  * @return	Error code (0 for success)
  */
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_philosopher 	*build;
+	t_philosopher	*build;
 
 	build = parse(argc, argv);
 	if (!build)

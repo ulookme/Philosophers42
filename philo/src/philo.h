@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chajjar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/12 13:54:03 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 15:56:29 by chajjar         ###   ########.fr       */
+/*   Created: 2022/07/18 12:49:40 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/18 12:49:43 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,27 +19,27 @@
 # include <unistd.h>
 # include <sys/time.h>
 
-struct s_philo;
+struct	s_philo;
 
 typedef struct s_struc_philosopher
 {
 	int				actif_or_not;
 	unsigned int	nb_philo;
 	unsigned int	time_to_die;
-	unsigned int 	time_to_eat;
+	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
 	unsigned int	nb_must_eat;
 	struct s_philo	*philo;
 	struct timeval	start;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t write_protec;
+	pthread_mutex_t	write_protec;
 
 }	t_philosopher;
 
 typedef struct s_philo
 {
 	pthread_mutex_t	*right;
-	pthread_mutex_t *left;
+	pthread_mutex_t	*left;
 	unsigned int	nb_eating;
 	struct timeval	last_time_eat;
 	t_philosopher	*runtime;
@@ -48,7 +48,7 @@ typedef struct s_philo
 
 }	t_philo;
 
-enum logCode {
+enum e_logCode {
 	NO_LOG = 0,
 	FORK,
 	EAT,
@@ -57,7 +57,7 @@ enum logCode {
 	DIE
 };
 
-enum errCode {
+enum e_errCode {
 	NO_ERR = 0,
 	LOW_ARGS,
 	MANY_ARGS,
@@ -66,8 +66,8 @@ enum errCode {
 };
 
 void			runtime(t_philosopher *data);
-void			log_msg(enum logCode logcode, t_philo *philo);
-void			*error_msg(enum errCode errcode, void *freeable);
+void			log_msg(enum e_logCode logcode, t_philo *philo);
+void			*error_msg(enum e_errCode errcode, void *freeable);
 long long		elapsed_convert(struct timeval timestamp);
 long long		time_convert(struct timeval timestamp);
 struct timeval	elapsed(struct timeval timestamp);

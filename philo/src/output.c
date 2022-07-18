@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   output.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chajjar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/12 14:29:06 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 14:24:45 by chajjar         ###   ########.fr       */
+/*   Created: 2022/07/18 12:49:03 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/18 12:51:45 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param	timestamp: Structure to convert
  * @return	Converted timestamp
  */
-long long		time_convert(struct timeval timestamp)
+long long	time_convert(struct timeval timestamp)
 {
 	return ((timestamp.tv_sec * 1000) + (timestamp.tv_usec / 1000));
 }
@@ -45,7 +45,7 @@ struct timeval	elapsed(struct timeval timestamp)
  * @param	timestamp: Timestamp to differ from
  * @return	Returns the diff converted into MS
  */
-long long		elapsed_convert(struct timeval timestamp)
+long long	elapsed_convert(struct timeval timestamp)
 {
 	return (time_convert(elapsed(timestamp)));
 }
@@ -53,10 +53,10 @@ long long		elapsed_convert(struct timeval timestamp)
 /* Display an log message depending on the log
  * code given
  *
- * @param	logcode: Log code to display
+ * @param	logcode: Log code to display philo
  * @param	philo: Philo struct requierd by most log messages
  */
-void	log_msg(enum logCode logcode, t_philo *philo)
+void	log_msg(enum e_logCode logcode, t_philo *philo)
 {
 	if (logcode < 1)
 		return ;
@@ -84,7 +84,7 @@ void	log_msg(enum logCode logcode, t_philo *philo)
  * @param	freeable: In case anything should be freed
  * @return	Returns NULL
  */
-void	*error_msg(enum errCode errcode, void *freeable)
+void	*error_msg(enum e_errCode errcode, void *freeable)
 {
 	if (freeable)
 		free(freeable);

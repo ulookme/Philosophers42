@@ -3,21 +3,23 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: chajjar <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/07/12 13:52:27 by chajjar           #+#    #+#              #
-#    Updated: 2022/07/14 16:21:16 by chajjar         ###   ########.fr        #
+#    Created: 2022/07/18 12:48:17 by chajjar           #+#    #+#              #
+#    Updated: 2022/07/18 12:50:20 by chajjar          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+
+
 # ===------------------------=== #
 #  *                          *  #
-#         GLOBAL SETTINGS        #
+#       GLOBAL SETTINGS c        #
 #  *                          *  #
 # ===------------------------=== #
 
 NAME = philo
-TEST_ARGS = 50 100 100 200 20
+TEST_ARGS = 50 300 100 200 20
 
 FLAGS = -Wall -Werror -Wextra -g3
 DANGER = -fsanitize=address

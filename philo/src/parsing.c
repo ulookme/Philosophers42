@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chajjar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/12 16:05:52 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 15:05:55 by chajjar         ###   ########.fr       */
+/*   Created: 2022/07/18 12:49:18 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/18 12:49:21 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* Converts a string to its corresponding integer
+/* Converts a string to its corresponding integer function atoi()
  * 
  * @param	str: String to convert
  * @return	Converted integer

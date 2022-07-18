@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   thread.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chajjar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/12 14:29:06 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/14 16:21:51 by chajjar         ###   ########.fr       */
+/*   Created: 2022/07/18 12:49:57 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/18 12:50:02 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /* Specialized sleep function which ends if sleep time
- * is over OR if simulation ended
+ * is over OR if simulation ended philo
  *
  * @param	time: Time to wait in MS
  * @param	data: Core structure of the simulation
@@ -66,7 +66,7 @@ static void	eat_task(t_philo *philo, t_philosopher *runtime)
  * @param	philo: Individual's philo struct
  * @return	NULL pointer
  */
-static void		*runtime_thread(void *arg)
+static void	*runtime_thread(void *arg)
 {
 	t_philo			*philo;
 	t_philosopher	*runtime;
