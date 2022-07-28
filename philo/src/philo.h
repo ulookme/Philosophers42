@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/18 12:49:40 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/18 12:49:43 by chajjar          ###   ########.fr       */
+/*   Created: 2022/07/21 15:49:16 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/27 12:29:29 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,35 +18,43 @@
 # include <pthread.h>
 # include <unistd.h>
 # include <sys/time.h>
+# include <string.h>
 
-struct	s_philo;
+// MACROS
 
-typedef struct s_struc_philosopher
+# define FAILURE -1
+# define SUCESS 0
+
+//STRUCTURES
+
+struct	s_rules;
+
+typedef struct s_philosophe
 {
-	int				actif_or_not;
-	unsigned int	nb_philo;
-	unsigned int	time_to_die;
-	unsigned int	time_to_eat;
-	unsigned int	time_to_sleep;
-	unsigned int	nb_must_eat;
-	struct s_philo	*philo;
-	struct timeval	start;
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	write_protec;
-
-}	t_philosopher;
-
-typedef struct s_philo
-{
-	pthread_mutex_t	*right;
-	pthread_mutex_t	*left;
-	unsigned int	nb_eating;
-	struct timeval	last_time_eat;
-	t_philosopher	*runtime;
+	int				id;
+	int				right_fork;
+	int				left_fork;
+	struct s_rules	*rules;
+	int				ate;
+	long long		last_eat;
 	pthread_t		thread;
-	char			id;
+}	t_philosophe;
 
-}	t_philo;
+typedef struct s_rules
+{
+	int				nb_philo;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				nb_eat;
+	int				died;
+	int				all_ate;
+	long long		first_timestamp;
+	t_philosophe	philosophes[200];
+	pthread_mutex_t	forks[200];
+	pthread_mutex_t	writing;
+	pthread_mutex_t	check_eat;
+}	t_rules;
 
 enum e_logCode {
 	NO_LOG = 0,
@@ -65,13 +73,18 @@ enum e_errCode {
 	INVALID_ARGS
 };
 
-void			runtime(t_philosopher *data);
-void			log_msg(enum e_logCode logcode, t_philo *philo);
-void			*error_msg(enum e_errCode errcode, void *freeable);
-long long		elapsed_convert(struct timeval timestamp);
-long long		time_convert(struct timeval timestamp);
-struct timeval	elapsed(struct timeval timestamp);
-t_philosopher	*parse(int argc, char **argv);
-void			dead_task(t_philosopher *runtime);
+int			init_all(t_rules *rules, char **argv);
+int			init_mutex(t_rules *rules);
+int			init_philosophe(t_rules *rules);
+long long	timestamp(void);
+long long	time_diff(long long past, long long current);
+void		inter_time(t_rules *rules, int time);
+void		print_msg(t_rules *rules, int id, char *msg);
+void		*error_msg(enum e_errCode errcode, void *freeable);
+void		eating(t_philosophe *p);
+void		*p_thread(void *p_data);
+void		death(t_rules *rules, t_philosophe *p);
+void		end_thread(t_rules *rules, t_philosophe *p);
+int			start_thread(t_rules *rules);
 
 #endif /* PHILO_H */

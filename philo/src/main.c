@@ -5,29 +5,24 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/18 12:48:42 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/18 12:48:47 by chajjar          ###   ########.fr       */
+/*   Created: 2022/07/25 12:39:33 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/27 13:06:31 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* Core function of the simulation programm philo
- *
- * @param	argc: Amount of arguments
- * @param	argv: List of arguments
- * @return	Error code (0 for success)
- */
-int	main(int argc, char **argv)
+int	main(int ac, char **av)
 {
-	t_philosopher	*build;
+	t_rules	rules;
 
-	build = parse(argc, argv);
-	if (!build)
-		return (1);
-	runtime(build);
-	free(build->forks);
-	free(build->philo);
-	free(build);
-	return (0);
+	if (ac < 5)
+		return ((int)error_msg(LOW_ARGS, NULL));
+	else if (ac > 6)
+		return ((int)error_msg(MANY_ARGS, NULL));
+	if (init_all(&rules, av) == FAILURE)
+		return (printf("\033[91mERROR : initialisation echoue !\n"));
+	if (start_thread(&rules) == FAILURE)
+		return (printf("\033[91mERROR : erreur dans la creation des threads!\n"));
+	return (SUCESS);
 }

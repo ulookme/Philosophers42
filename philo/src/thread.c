@@ -5,132 +5,116 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/18 12:49:57 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/18 12:50:02 by chajjar          ###   ########.fr       */
+/*   Created: 2022/07/25 16:25:17 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/28 11:22:01 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* Specialized sleep function which ends if sleep time
- * is over OR if simulation ended philo
- *
- * @param	time: Time to wait in MS
- * @param	data: Core structure of the simulation
- */
-static void	wait_task(long long time, t_philosopher *data)
+void	eating(t_philosophe *p)
 {
-	struct timeval	current;
+	t_rules	*rules;
 
-	gettimeofday(&current, NULL);
-	while (elapsed_convert(current) < time
-		&& data->actif_or_not)
-		usleep(100);
+	rules = p->rules;
+	pthread_mutex_lock(&(rules->forks[p->left_fork]));
+	print_msg(rules, p->id, "\033[93mhas taken a fork 🍴");
+	pthread_mutex_lock(&(rules->forks[p->right_fork]));
+	print_msg(rules, p->id, "\033[93mhas taken a fork 🍴");
+	pthread_mutex_lock(&(rules->check_eat));
+	print_msg(rules, p->id, "\033[33mis now eating 🍝");
+	p->last_eat = timestamp();
+	pthread_mutex_unlock(&(rules->check_eat));
+	if (rules->nb_eat > 0)
+		p->ate++;
+	inter_time(rules, rules->time_to_eat);
+	pthread_mutex_unlock(&(rules->forks[p->left_fork]));
+	pthread_mutex_unlock(&(rules->forks[p->right_fork]));
 }
 
-/* Specialized function for eating task
- *
- * @param	philo: Individual's philo structure
- * @param	runtime: Core structure for simulation
- */
-static void	eat_task(t_philo *philo, t_philosopher *runtime)
+void	*p_thread(void *p_data)
 {
-	pthread_mutex_lock(philo->left);
-	if (!runtime->actif_or_not)
-	{
-		pthread_mutex_unlock(philo->left);
-		return ;
-	}
-	log_msg(FORK, philo);
-	pthread_mutex_lock(philo->right);
-	if (!runtime->actif_or_not)
-	{
-		pthread_mutex_unlock(philo->left);
-		pthread_mutex_unlock(philo->right);
-		return ;
-	}
-	log_msg(FORK, philo);
-	log_msg(EAT, philo);
-	gettimeofday(&philo->last_time_eat, NULL);
-	wait_task(runtime->time_to_eat, runtime);
-	philo->nb_eating++;
-	if (philo->nb_eating > runtime->nb_must_eat)
-		runtime->actif_or_not = 0;
-	gettimeofday(&philo->last_time_eat, NULL);
-	pthread_mutex_unlock(philo->left);
-	pthread_mutex_unlock(philo->right);
-}
+	int				i;
+	t_philosophe	*p;
+	t_rules			*rules;
 
-/* Starting point of philo's threads
- *
- * @param	philo: Individual's philo struct
- * @return	NULL pointer
- */
-static void	*runtime_thread(void *arg)
-{
-	t_philo			*philo;
-	t_philosopher	*runtime;
-
-	philo = (t_philo *) arg;
-	runtime = philo->runtime;
-	log_msg(THINK, philo);
-	if (runtime->nb_philo == 1)
-		wait_task(runtime->time_to_die * 2, runtime);
-	else if (philo->id % 2)
-		wait_task(runtime->time_to_eat, runtime);
-	while (runtime->actif_or_not)
+	i = 0;
+	p = (t_philosophe *)p_data;
+	rules = p->rules;
+	if (p->id % 2)
+		usleep(15000);
+	while (rules->died == 0 && rules->all_ate == 0)
 	{
-		eat_task(philo, runtime);
-		if (!runtime->actif_or_not)
-			break ;
-		log_msg(SLEEP, philo);
-		wait_task(runtime->time_to_sleep, runtime);
-		if (!runtime->actif_or_not)
-			break ;
-		log_msg(THINK, philo);
+		eating(p);
+		print_msg(rules, p->id, "\033[36mis now sleeping 💤");
+		inter_time(rules, rules->time_to_sleep);
+		print_msg(rules, p->id, "\033[95mis now thinking 🤔");
+		i++;
 	}
 	return (NULL);
 }
 
-/* Initialize a philosopher's thread and
- * sets its variables
- *
- * @param	data: Core structure of the simulation
- * @return	Returns the corresponding philo structure
- */
-static t_philo	init_philo(t_philosopher *data, int i)
+void	death(t_rules *rules, t_philosophe *p)
 {
-	t_philo		philo;
+	int	i;
 
-	philo = data->philo[i];
-	philo.nb_eating = 0;
-	philo.runtime = data;
-	philo.id = i;
-	philo.left = &data->forks[i % data->nb_philo];
-	philo.right = &data->forks[(i + 1) % data->nb_philo];
-	gettimeofday(&philo.last_time_eat, NULL);
-	pthread_create(&philo.thread, NULL, runtime_thread, &data->philo[i]);
-	return (philo);
+	while (rules->all_ate == 0)
+	{
+		i = -1;
+		while (++i < rules->nb_philo && rules->died == 0)
+		{
+			pthread_mutex_lock(&(rules->check_eat));
+			if (time_diff(p[i].last_eat, timestamp()) > rules->time_to_die)
+			{
+				print_msg(rules, p->id, "\033[31;1mhas died! 💀");
+				rules->died = 1;
+			}
+			pthread_mutex_unlock(&(rules->check_eat));
+		}
+		usleep(100);
+		if (rules->died == 1)
+			break ;
+		i = 0 ;
+		while (rules->all_ate == 0 && p[i].ate >= rules->nb_eat)
+			i++;
+		if (i == rules->nb_philo)
+			rules->all_ate = 1;
+	}
 }
 
-/* Initialize simulation by starting up every threads and
- * setup its own verifications sessions
- *
- * @param	data: Core structure of the simulation
- */
-void	runtime(t_philosopher *data)
+void	end_thread(t_rules *rules, t_philosophe *p)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	gettimeofday(&data->start, NULL);
-	while (i < data->nb_philo)
+	while (++i < rules->nb_philo)
 	{
-		data->philo[i] = init_philo(data, i);
+		pthread_join(p[i].thread, NULL);
+		if (rules->nb_philo == 1)
+			break ;
+	}
+	i = 0;
+	while (++i < rules->nb_philo)
+		pthread_mutex_destroy(&(rules->forks[i]));
+	pthread_mutex_destroy(&(rules->writing));
+}
+
+int	start_thread(t_rules *rules)
+{
+	t_philosophe	*p;
+	int				i;
+
+	p = rules->philosophes;
+	i = 0;
+	rules->first_timestamp = timestamp();
+	while (i < rules->nb_philo)
+	{
+		if (pthread_create(&(p[i].thread), NULL, p_thread, &(p[i])))
+			return (FAILURE);
+		p[i].last_eat = timestamp();
 		i++;
 	}
-	dead_task(data);
-	i = 0;
-	while (i < data->nb_philo)
-		pthread_join(data->philo[i++].thread, NULL);
+	death(rules, p);
+	end_thread(rules, p);
+	return (SUCESS);
 }

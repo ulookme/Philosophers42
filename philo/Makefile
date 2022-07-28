@@ -5,12 +5,10 @@
 #                                                     +:+ +:+         +:+      #
 #    By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/07/18 12:48:17 by chajjar           #+#    #+#              #
-#    Updated: 2022/07/18 12:50:20 by chajjar          ###   ########.fr        #
+#    Created: 2022/07/21 15:43:00 by chajjar           #+#    #+#              #
+#    Updated: 2022/07/28 11:19:17 by chajjar          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-
 
 # ===------------------------=== #
 #  *                          *  #
@@ -19,12 +17,12 @@
 # ===------------------------=== #
 
 NAME = philo
-TEST_ARGS = 50 300 100 200 20
+TEST_ARGS = 1 800 200 200 7
 
 FLAGS = -Wall -Werror -Wextra -g3
 DANGER = -fsanitize=address
 
-ALL = parsing philo main thread output
+ALL = parsing  main  timer_msg thread
 SRC = $(addprefix $(SUBFOLDER_SRC), $(addsuffix .c, $(ALL)))
 OBJ = $(SRC:.c=.o)
 

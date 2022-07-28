@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chajjar <chajjar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/18 12:49:18 by chajjar           #+#    #+#             */
-/*   Updated: 2022/07/18 12:49:21 by chajjar          ###   ########.fr       */
+/*   Created: 2022/07/25 12:17:34 by chajjar           #+#    #+#             */
+/*   Updated: 2022/07/27 12:25:06 by chajjar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,74 +41,55 @@ static int	ft_atoi(const char *str)
 	return (res * negative);
 }
 
-/* Initialize the base structure of the
- * simulation with given args
- *
- * @param	args: Arguments to parse
- * @return	Base structure ready to use
- */
-static t_philosopher	*init_args(char **args)
+int	init_mutex(t_rules *rules)
 {
-	t_philosopher	*rules;
+	int	i;
 
-	rules = malloc(sizeof(t_philosopher));
-	if (!rules)
-		return (NULL);
-	rules->nb_philo = ft_atoi(args[1]);
-	rules->time_to_die = ft_atoi(args[2]);
-	rules->time_to_eat = ft_atoi(args[3]);
-	rules->time_to_sleep = ft_atoi(args[4]);
-	rules->nb_must_eat = ft_atoi(args[5]);
-	rules->actif_or_not = 1;
-	return (rules);
-}
-
-/* Initializes every mutexes of the core structur
- *
- * @param	build: Core structure of the simulation
- */
-static void	init_mutex(t_philosopher *build)
-{
-	size_t	i;
-
-	build->forks = malloc(sizeof(pthread_mutex_t) * build->nb_philo);
-	if (!build->forks)
-		return ;
-	i = 0;
-	while (i < build->nb_philo)
-		pthread_mutex_init(&build->forks[i++], NULL);
-	pthread_mutex_init(&build->write_protec, NULL);
-}
-
-/* Parses the arguments and returns the base
- * structure upon success or NULL upon failure
- * 
- * @param	argc: Arguments count
- * @param	argv: Arguments list
- * @return	Base structure ready to use
- */
-t_philosopher	*parse(int argc, char **argv)
-{
-	t_philosopher	*build;
-
-	if (argc < 5)
-		return (error_msg(LOW_ARGS, NULL));
-	else if (argc > 6)
-		return (error_msg(MANY_ARGS, NULL));
-	build = init_args(argv);
-	if (!build)
-		return (error_msg(MEMORY_FAIL, NULL));
-	if (!build->nb_philo || !build->time_to_die
-		|| !build->time_to_eat || !build->time_to_sleep)
-		return (error_msg(INVALID_ARGS, build));
-	build->philo = malloc(sizeof(t_philo) * build->nb_philo);
-	if (!build->philo)
-		return (error_msg(MEMORY_FAIL, build));
-	init_mutex(build);
-	if (!build->forks)
+	i = rules->nb_philo;
+	while (--i >= 0)
 	{
-		free(build->philo);
-		return (error_msg(MEMORY_FAIL, build));
+		pthread_mutex_init(&(rules->forks[i]), NULL);
 	}
-	return (build);
+	pthread_mutex_init(&(rules->writing), NULL);
+	pthread_mutex_init(&(rules->check_eat), NULL);
+	return (SUCESS);
+}
+
+int	init_philosophe(t_rules *rules)
+{
+	int	i;
+
+	i = rules->nb_philo;
+	while (--i >= 0)
+	{
+		rules->philosophes[i].id = i;
+		rules->philosophes[i].left_fork = i;
+		rules->philosophes[i].right_fork = (i + 1) % rules->nb_philo;
+		rules->philosophes[i].last_eat = 0;
+		rules->philosophes[i].ate = 0;
+		rules->philosophes[i].rules = rules;
+	}
+	return (SUCESS);
+}
+
+int	init_all(t_rules *rules, char **argv)
+{
+	rules->nb_philo = ft_atoi(argv[1]);
+	rules->time_to_die = ft_atoi(argv[2]);
+	rules->time_to_eat = ft_atoi(argv[3]);
+	rules->time_to_sleep = ft_atoi(argv[4]);
+	if (argv[5])
+		rules->nb_eat = ft_atoi(argv[5]);
+	rules->died = 0;
+	rules->all_ate = 0;
+	if (rules->nb_philo < 1 || rules->time_to_die < 60
+		|| rules->time_to_eat < 60 || rules->time_to_sleep < 60
+		|| rules->nb_philo > 200)
+		return (FAILURE);
+	if (argv[5])
+		if (rules->nb_eat < 1)
+			return (FAILURE);
+	init_mutex(rules);
+	init_philosophe(rules);
+	return (SUCESS);
 }
